@@ -9,6 +9,10 @@
     <PackageReference Include="NUnit" Version="3.10.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />    
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Wikiled.Delfi\Wikiled.Delfi.csproj" />
+  </ItemGroup>
   
   <Target Name="ForceGenerationOfBindingRedirects" AfterTargets="ResolveAssemblyReferences" BeforeTargets="GenerateBindingRedirects" Condition="'$(AutoGenerateBindingRedirects)' == 'true'">
     <PropertyGroup>
