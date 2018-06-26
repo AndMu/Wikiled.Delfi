@@ -6,7 +6,7 @@ namespace Wikiled.Delfi.Articles
     {
         public string Title { get; set; }
 
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
 
         public string Topic { get; set; }
 
