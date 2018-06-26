@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -15,7 +14,7 @@ using Polly;
 
 namespace Wikiled.Delfi.Articles
 {
-    public abstract class CommentsReader : ICommentsReader
+    public class CommentsReader : ICommentsReader
     {
         private readonly ILogger<CommentsReader> logger;
 
@@ -25,12 +24,15 @@ namespace Wikiled.Delfi.Articles
 
         private readonly ArticleDefinition article;
 
+        private readonly IAdjuster adjuster;
+
         private bool isInit;
 
-        protected CommentsReader(ArticleDefinition article, ILogger<CommentsReader> logger)
+        public CommentsReader(ILogger<CommentsReader> logger, ArticleDefinition article, IAdjuster adjuster)
         {
             this.article = article ?? throw new ArgumentNullException(nameof(article));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.adjuster = adjuster ?? throw new ArgumentNullException(nameof(adjuster));
             policy = Policy
                 .Handle<Exception>()
                 .WaitAndRetryAsync(new[] {
@@ -80,7 +82,7 @@ namespace Wikiled.Delfi.Articles
                     {
                         var tasks = new List<Task<string>>();
                         tasks.Add(Task.FromResult(text));
-                        for (int i = 0; i < totalPages; i++)
+                        for (int i = 1; i < totalPages; i++)
                         {
                             tasks.Add(ReadAllText(i));
                         }
@@ -150,12 +152,10 @@ namespace Wikiled.Delfi.Articles
             var builder = new UriBuilder(article.Url);
             var query = HttpUtility.ParseQueryString(builder.Query);
             query["com"] = "1";
-            AddParametes(query);
+            adjuster.AddParametes(query);
             query["no"] = (page * pageSize).ToString();
             builder.Query = query.ToString();
             return builder.ToString();
         }
-
-        protected abstract void AddParametes(NameValueCollection parameters);
     }
 }
