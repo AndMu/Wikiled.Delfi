@@ -16,7 +16,7 @@ namespace Wikiled.Delfi.Tests.Articles
         {
             ArticleDefinition article = new ArticleDefinition();
             article.Url = new Uri("https://www.delfi.lt/veidai/zmones/petro-grazulio-dukreles-mama-paviesino-ju-susirasinejima-galite-suprasti-kaip-jauciausi.d?id=78390475");
-            var reader = new CommentsReader(new NullLogger<CommentsReader>(), article, new AnonymousAdjuster());
+            var reader = new CommentsReader(new NullLoggerFactory(), article, new AnonymousAdjuster());
             await reader.Init();
             var comments = await reader.ReadAllComments().ToArray();
             var distinct = comments.Select(item => item.Id).Distinct();

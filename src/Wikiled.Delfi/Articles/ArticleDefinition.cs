@@ -1,4 +1,5 @@
 ﻿using System;
+using Wikiled.Delfi.Articles.Feeds;
 
 namespace Wikiled.Delfi.Articles
 {
@@ -12,6 +13,6 @@ namespace Wikiled.Delfi.Articles
 
         public Uri Url { get; set; }
 
-        public string Text { get; set; }
+        public FeedName Feed { get; set; }
     }
 }

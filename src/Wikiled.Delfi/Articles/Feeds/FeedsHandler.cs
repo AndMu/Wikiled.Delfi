@@ -4,13 +4,13 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using CodeHollow.FeedReader;
 
-namespace Wikiled.Delfi.Articles
+namespace Wikiled.Delfi.Articles.Feeds
 {
-    public class MonitorFeed
+    public class FeedsHandler : IFeedsHandler
     {
-        private readonly string[] feeds;
+        private readonly FeedName[] feeds;
 
-        public MonitorFeed(string[] feeds)
+        public FeedsHandler(FeedName[] feeds)
         {
             this.feeds = feeds ?? throw new ArgumentNullException(nameof(feeds));
         }
@@ -20,27 +20,29 @@ namespace Wikiled.Delfi.Articles
             return Observable.Create<ArticleDefinition>(
                 async observer =>
                 {
-                    List<Task<Feed>> tasks = new List<Task<Feed>>();
+                    List<(FeedName Feed, Task<Feed> Task)> tasks = new List<(FeedName Feed, Task<Feed> Task)>();
                     foreach (var feed in feeds)
                     {
-                        var task = FeedReader.ReadAsync(feed);
-                        tasks.Add(task);
+                        var task = FeedReader.ReadAsync(feed.Url);
+                        tasks.Add((feed, task));
                     }
 
                     foreach (var task in tasks)
                     {
-                        var result = await task;
+                        var result = await task.Task;
                         foreach (var item in result.Items)
                         {
                             ArticleDefinition article = new ArticleDefinition();
                             article.Url = new Uri(item.Link);
                             article.Date = item.PublishingDate;
                             article.Title = item.Title;
-                            article.
+                            article.Feed = task.Feed;
+                            observer.OnNext(article);
                         }
                     }
+
+                    observer.OnCompleted();
                 });
         }
-
     }
 }

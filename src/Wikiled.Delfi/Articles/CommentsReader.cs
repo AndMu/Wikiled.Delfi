@@ -28,10 +28,10 @@ namespace Wikiled.Delfi.Articles
 
         private bool isInit;
 
-        public CommentsReader(ILogger<CommentsReader> logger, ArticleDefinition article, IAdjuster adjuster)
+        public CommentsReader(ILoggerFactory loggerFactory, ArticleDefinition article, IAdjuster adjuster)
         {
             this.article = article ?? throw new ArgumentNullException(nameof(article));
-            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            logger = loggerFactory?.CreateLogger<CommentsReader>() ?? throw new ArgumentNullException(nameof(logger));
             this.adjuster = adjuster ?? throw new ArgumentNullException(nameof(adjuster));
             policy = Policy
                 .Handle<Exception>()
