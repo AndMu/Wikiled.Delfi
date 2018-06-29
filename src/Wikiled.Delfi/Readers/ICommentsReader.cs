@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Wikiled.Delfi.Data;
 
-namespace Wikiled.Delfi.Articles
+namespace Wikiled.Delfi.Readers
 {
     public interface ICommentsReader
     {

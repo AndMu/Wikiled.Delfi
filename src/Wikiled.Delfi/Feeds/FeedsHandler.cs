@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using CodeHollow.FeedReader;
+using Wikiled.Delfi.Data;
 
-namespace Wikiled.Delfi.Articles.Feeds
+namespace Wikiled.Delfi.Feeds
 {
     public class FeedsHandler : IFeedsHandler
     {
@@ -34,6 +36,9 @@ namespace Wikiled.Delfi.Articles.Feeds
                         {
                             ArticleDefinition article = new ArticleDefinition();
                             article.Url = new Uri(item.Link);
+                            UriBuilder builder = new UriBuilder(article.Url);
+                            var query = HttpUtility.ParseQueryString(builder.Query);
+                            article.Id = query["id"];
                             article.Date = item.PublishingDate;
                             article.Title = item.Title;
                             article.Feed = task.Feed;

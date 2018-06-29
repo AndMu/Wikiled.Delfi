@@ -1,6 +1,7 @@
 ﻿using System;
+using Wikiled.Delfi.Data;
 
-namespace Wikiled.Delfi.Articles.Feeds
+namespace Wikiled.Delfi.Feeds
 {
     public interface IFeedsHandler
     {

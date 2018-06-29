@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
 
-namespace Wikiled.Delfi.Articles
+namespace Wikiled.Delfi.Adjusters
 {
     public interface IAdjuster
     {

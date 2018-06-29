@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Net;
 
-namespace Wikiled.Delfi.Articles
+namespace Wikiled.Delfi.Data
 {
     public class CommentData
     {
         public string Id { get; set; }
 
         public string Author { get; set; }
+
+        public bool IsAnonymous { get; set; }
 
         public IPAddress Address { get; set; }
 

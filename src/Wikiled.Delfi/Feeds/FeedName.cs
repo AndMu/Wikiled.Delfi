@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Wikiled.Delfi.Articles.Feeds
+﻿namespace Wikiled.Delfi.Feeds
 {
     public class FeedName
     {

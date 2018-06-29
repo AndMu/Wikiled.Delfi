@@ -2,23 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
-using Polly;
+using Wikiled.Delfi.Adjusters;
+using Wikiled.Delfi.Data;
 
-namespace Wikiled.Delfi.Articles
+namespace Wikiled.Delfi.Readers
 {
     public class CommentsReader : ICommentsReader
     {
         private readonly ILogger<CommentsReader> logger;
-
-        private readonly Policy policy;
 
         private int pageSize = 20;
 
@@ -28,30 +25,24 @@ namespace Wikiled.Delfi.Articles
 
         private bool isInit;
 
-        public CommentsReader(ILoggerFactory loggerFactory, ArticleDefinition article, IAdjuster adjuster)
+        private readonly IHtmlReader reader;
+
+        public CommentsReader(ILoggerFactory loggerFactory, ArticleDefinition article, IAdjuster adjuster, IHtmlReader reader)
         {
             this.article = article ?? throw new ArgumentNullException(nameof(article));
             logger = loggerFactory?.CreateLogger<CommentsReader>() ?? throw new ArgumentNullException(nameof(logger));
             this.adjuster = adjuster ?? throw new ArgumentNullException(nameof(adjuster));
-            policy = Policy
-                .Handle<Exception>()
-                .WaitAndRetryAsync(new[] {
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(2),
-                    TimeSpan.FromSeconds(4)
-                });
+            this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
         }
 
-        private string text;
+        private HtmlDocument firstPage;
 
         public int Total { get; private set; }
 
         public async Task Init()
         {
-            text = await ReadAllText(0);
-            var html = new HtmlDocument();
-            html.LoadHtml(text);
-            var doc = html.DocumentNode;
+            firstPage = await reader.ReadDocument(GetUri(0));
+            var doc = firstPage.DocumentNode;
             var commentsDefinition = doc.QuerySelector("div#comments-list");
             Total = int.Parse(commentsDefinition.Attributes.First(a => a.Name == "data-count").Value);
             isInit = true;
@@ -80,11 +71,11 @@ namespace Wikiled.Delfi.Articles
 
                     try
                     {
-                        var tasks = new List<Task<string>>();
-                        tasks.Add(Task.FromResult(text));
+                        var tasks = new List<Task<HtmlDocument>>();
+                        tasks.Add(Task.FromResult(firstPage));
                         for (int i = 1; i < totalPages; i++)
                         {
-                            tasks.Add(ReadAllText(i));
+                            tasks.Add(reader.ReadDocument(GetUri(i)));
                         }
 
                         foreach (var task in tasks)
@@ -105,16 +96,9 @@ namespace Wikiled.Delfi.Articles
                 });
         }
 
-        private Task<string> ReadAllText(int page)
-        {
-            HttpClient client = new HttpClient();
-            return policy.ExecuteAsync(ct => client.GetStringAsync(GetUri(page)), CancellationToken.None);
-        }
 
-        private IEnumerable<CommentData> ParsePage(string page)
+        private IEnumerable<CommentData> ParsePage(HtmlDocument html)
         {
-            var html = new HtmlDocument();
-            html.LoadHtml(page);
             var doc = html.DocumentNode;
             var comments = doc.QuerySelectorAll("div.comment-post");
             foreach (var htmlNode in comments)
@@ -141,8 +125,16 @@ namespace Wikiled.Delfi.Articles
                 record.DownVote = int.Parse(htmlNode.QuerySelector("div.comment-votes-down").InnerText.Trim());
                 var dateIp = htmlNode.QuerySelector("div.comment-date").InnerText.Trim();
                 var ip = dateIp.IndexOf("IP:");
-                record.Date = DateTime.Parse(dateIp.Substring(0, ip).Trim());
-                record.Address = IPAddress.Parse(dateIp.Substring(ip + 3).Trim());
+                if (ip == -1)
+                {
+                    record.Date = DateTime.Parse(dateIp.Trim());
+                }
+                else
+                {
+                    record.Date = DateTime.Parse(dateIp.Substring(0, ip).Trim());
+                    record.Address = IPAddress.Parse(dateIp.Substring(ip + 3).Trim());
+                }
+
                 yield return record;
             }
         }
