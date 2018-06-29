@@ -6,6 +6,8 @@ namespace Wikiled.Delfi.Readers
 {
     public interface ICommentsReader
     {
+        int Total { get; }
+
         Task Init();
 
         IObservable<CommentData> ReadAllComments();

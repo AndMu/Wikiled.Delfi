@@ -4,16 +4,22 @@ namespace Wikiled.Delfi.Data
 {
     public class Article
     {
-        public Article(ArticleDefinition definition, CommentData[] comments, ArticleText articleText)
+        public Article(ArticleDefinition definition, CommentsData anonymous, CommentsData registered, ArticleText articleText, DateTime dateTime)
         {
             Definition = definition ?? throw new ArgumentNullException(nameof(definition));
-            Comments = comments ?? throw new ArgumentNullException(nameof(comments));
             ArticleText = articleText ?? throw new ArgumentNullException(nameof(articleText));
+            DateTime = dateTime;
+            Anonymous = anonymous ?? throw new ArgumentNullException(nameof(anonymous));
+            Registered = registered ?? throw new ArgumentNullException(nameof(registered));
         }
+
+        public DateTime DateTime { get; }
 
         public ArticleDefinition Definition { get; }
 
-        public CommentData[] Comments{ get; }
+        public CommentsData Anonymous { get; }
+
+        public CommentsData Registered { get; }
 
         public ArticleText ArticleText { get; }
     }

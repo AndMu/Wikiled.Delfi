@@ -40,7 +40,7 @@ namespace Wikiled.Delfi.Tests.Readers
             Assert.IsNotNull(result);
             Assert.GreaterOrEqual(result.ArticleText.Text.Length, 100);
             Assert.GreaterOrEqual(result.ArticleText.Description.Length, 100);
-            Assert.GreaterOrEqual(result.Comments.Length, 1000);
+            Assert.GreaterOrEqual(result.Anonymous.Comments.Length, 1000);
         }
 
         [Test]

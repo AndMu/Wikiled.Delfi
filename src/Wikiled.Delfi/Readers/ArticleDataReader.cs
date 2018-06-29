@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -22,23 +21,31 @@ namespace Wikiled.Delfi.Readers
             this.articleTextReader = articleTextReader ?? throw new ArgumentNullException(nameof(articleTextReader));
         }
 
+        public async Task<bool> RequiresRefreshing(Article article)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Article> Read(ArticleDefinition definition)
         {
             logger.LogDebug("Reading article: {0}[{1}]", definition.Title, definition.Id);
             var anonymous = ReadComments(definition, true);
             var registered = ReadComments(definition, false);
             var readArticle = articleTextReader.ReadArticle(definition);
-            var anonymousResult = await anonymous;
-            var registeredResult = await registered;
-            return new Article(definition, registeredResult.Concat(anonymousResult).ToArray(), await readArticle);
+            return new Article(definition, await anonymous, await registered, await readArticle, DateTime.UtcNow);
         }
 
-        private async Task<CommentData[]> ReadComments(ArticleDefinition definition, bool anonymous)
+        private async Task<CommentsData> ReadComments(ArticleDefinition definition, bool anonymous)
         {
             var commentsReader = commentsReaderFactory.Create(definition, anonymous);
             await commentsReader.Init();
             var result = await commentsReader.ReadAllComments().ToArray();
-            return result;
+            if (commentsReader.Total != result.Length)
+            {
+                logger.LogWarning("Mistmatch in comments count. Expected {0} but received {1}", commentsReader.Total, result.Length);
+            }
+
+            return new CommentsData(commentsReader.Total, result);;
         }
     }
 }
