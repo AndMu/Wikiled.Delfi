@@ -7,19 +7,16 @@ using NUnit.Framework;
 using Wikiled.Delfi.Data;
 using Wikiled.Delfi.Readers;
 
-namespace Wikiled.Delfi.Tests.Readers
+namespace Wikiled.Delfi.AcceptanceTests.Readers
 {
     [TestFixture]
     public class ArticleTextReaderTests
     {
-        private Mock<IHtmlReader> mockHtmlReader;
-
         private ArticleTextReader instance;
 
         [SetUp]
         public void SetUp()
         {
-            mockHtmlReader = new Mock<IHtmlReader>();
             instance = CreateInstance();
         }
 
@@ -34,20 +31,9 @@ namespace Wikiled.Delfi.Tests.Readers
             Assert.GreaterOrEqual(text.Description.Length, 100);
         }
 
-        [Test]
-        public void Construct()
-        {
-            Assert.Throws<ArgumentNullException>(() => new ArticleTextReader(
-                null,
-                mockHtmlReader.Object));
-            Assert.Throws<ArgumentNullException>(() => new ArticleTextReader(
-                new NullLoggerFactory(), 
-                null));
-        }
-
         private ArticleTextReader CreateInstance()
         {
-            return new ArticleTextReader(new NullLoggerFactory(), mockHtmlReader.Object);
+            return new ArticleTextReader(new NullLoggerFactory(), new HtmlReader());
         }
     }
 }

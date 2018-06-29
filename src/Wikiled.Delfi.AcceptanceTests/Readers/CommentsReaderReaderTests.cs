@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -8,7 +7,7 @@ using Wikiled.Delfi.Adjusters;
 using Wikiled.Delfi.Data;
 using Wikiled.Delfi.Readers;
 
-namespace Wikiled.Delfi.Tests.Readers
+namespace Wikiled.Delfi.AcceptanceTests.Readers
 {
     [TestFixture]
     public class CommentsReaderReaderTests
@@ -21,7 +20,7 @@ namespace Wikiled.Delfi.Tests.Readers
             var reader = new CommentsReader(new NullLoggerFactory(), article, new AnonymousAdjuster(), new HtmlReader());
             await reader.Init();
             var comments = await reader.ReadAllComments().ToArray();
-            var distinct = comments.Select(item => item.Id).Distinct();
+            Assert.Greater(comments.Length, 100);
         }
     }
 }
