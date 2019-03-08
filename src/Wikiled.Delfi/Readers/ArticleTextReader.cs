@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
-using Wikiled.Delfi.Data;
+using Wikiled.News.Monitoring.Data;
+using Wikiled.News.Monitoring.Readers;
+using Wikiled.News.Monitoring.Retriever;
 
 namespace Wikiled.Delfi.Readers
 {
@@ -13,23 +16,23 @@ namespace Wikiled.Delfi.Readers
     {
         private readonly ILogger<ArticleTextReader> logger;
 
-        private readonly IHtmlReader reader;
+        private readonly ITrackedRetrieval reader;
 
-        public ArticleTextReader(ILoggerFactory loggerFactory, IHtmlReader reader)
+        public ArticleTextReader(ILoggerFactory loggerFactory, ITrackedRetrieval reader)
         {
-            logger = loggerFactory?.CreateLogger<ArticleTextReader>() ?? throw new ArgumentNullException(nameof(logger));
             this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
+            logger = loggerFactory?.CreateLogger<ArticleTextReader>() ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<ArticleText> ReadArticle(ArticleDefinition definition)
+        public async Task<ArticleText> ReadArticle(ArticleDefinition definition, CancellationToken token)
         {
             logger.LogDebug("Reading article text: {0}", definition.Id);
-            var page = await reader.ReadDocument(definition.Url.ToString());
+            var page = (await reader.Read(definition.Url, token).ConfigureAwait(false)).GetDocument();
             var doc = page.DocumentNode;
             var article = doc.QuerySelector("div.article-body");
             var description = article.QuerySelector("div[itemprop='description']");
             var articleInner = doc.QuerySelector("div[itemprop='articleBody']");
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             var pargraphs = articleInner.QuerySelectorAll("p");
             foreach (var pargraph in pargraphs)
             {
@@ -42,7 +45,7 @@ namespace Wikiled.Delfi.Readers
 
             return new ArticleText
             {
-                Description = description.InnerText?.Trim(),
+                Title = description.InnerText?.Trim(),
                 Text = builder.ToString()
             };
         }

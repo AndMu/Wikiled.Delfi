@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using Wikiled.Delfi.Adjusters;
-using Wikiled.Delfi.Data;
+using Wikiled.News.Monitoring.Data;
+using Wikiled.News.Monitoring.Readers;
+using Wikiled.News.Monitoring.Retriever;
 
 namespace Wikiled.Delfi.Readers
 {
@@ -25,9 +27,10 @@ namespace Wikiled.Delfi.Readers
 
         private bool isInit;
 
-        private readonly IHtmlReader reader;
+        private readonly ITrackedRetrieval reader;
 
-        public CommentsReader(ILoggerFactory loggerFactory, ArticleDefinition article, IAdjuster adjuster, IHtmlReader reader)
+
+        public CommentsReader(ILoggerFactory loggerFactory, ArticleDefinition article, IAdjuster adjuster, ITrackedRetrieval reader)
         {
             this.article = article ?? throw new ArgumentNullException(nameof(article));
             logger = loggerFactory?.CreateLogger<CommentsReader>() ?? throw new ArgumentNullException(nameof(logger));
@@ -41,7 +44,7 @@ namespace Wikiled.Delfi.Readers
 
         public async Task Init()
         {
-            firstPage = await reader.ReadDocument(GetUri(0));
+            firstPage = (await reader.Read(GetUri(0), CancellationToken.None).ConfigureAwait(false)).GetDocument();
             var doc = firstPage.DocumentNode;
             var commentsDefinition = doc.QuerySelector("div#comments-list");
             Total = int.Parse(commentsDefinition.Attributes.First(a => a.Name == "data-count").Value);
@@ -63,7 +66,7 @@ namespace Wikiled.Delfi.Readers
             return Observable.Create<CommentData>(
                 async observer =>
                 {
-                    int totalPages = Total / pageSize;
+                    var totalPages = Total / pageSize;
                     if (Total % pageSize > 0)
                     {
                         totalPages++;
@@ -73,14 +76,14 @@ namespace Wikiled.Delfi.Readers
                     {
                         var tasks = new List<Task<HtmlDocument>>();
                         tasks.Add(Task.FromResult(firstPage));
-                        for (int i = 1; i < totalPages; i++)
+                        for (var i = 1; i < totalPages; i++)
                         {
-                            tasks.Add(reader.ReadDocument(GetUri(i)));
+                            tasks.Add(GetDocumentById(i));
                         }
 
                         foreach (var task in tasks)
                         {
-                            var result = await task;
+                            var result = await task.ConfigureAwait(false);
                             foreach (var commentData in ParsePage(result))
                             {
                                 observer.OnNext(commentData);
@@ -96,6 +99,11 @@ namespace Wikiled.Delfi.Readers
                 });
         }
 
+        private async Task<HtmlDocument> GetDocumentById(int id)
+        {
+            return (await reader.Read(GetUri(id), CancellationToken.None).ConfigureAwait(false)).GetDocument();
+        }
+
 
         private IEnumerable<CommentData> ParsePage(HtmlDocument html)
         {
@@ -103,7 +111,7 @@ namespace Wikiled.Delfi.Readers
             var comments = doc.QuerySelectorAll("div.comment-post");
             foreach (var htmlNode in comments)
             {
-                CommentData record = new CommentData();
+                var record = new CommentData();
                 var author = htmlNode.QuerySelector("div.comment-author");
                 if (author == null)
                 {
@@ -121,8 +129,9 @@ namespace Wikiled.Delfi.Readers
                 }
 
                 record.Text = comment.InnerText.Trim();
-                record.UpVote = int.Parse(htmlNode.QuerySelector("div.comment-votes-up").InnerText.Trim());
-                record.DownVote = int.Parse(htmlNode.QuerySelector("div.comment-votes-down").InnerText.Trim());
+                var upVote = int.Parse(htmlNode.QuerySelector("div.comment-votes-up").InnerText.Trim());
+                var downVote = int.Parse(htmlNode.QuerySelector("div.comment-votes-down").InnerText.Trim());
+                //record.Vote = 
                 var dateIp = htmlNode.QuerySelector("div.comment-date").InnerText.Trim();
                 var ip = dateIp.IndexOf("IP:");
                 if (ip == -1)
@@ -132,14 +141,13 @@ namespace Wikiled.Delfi.Readers
                 else
                 {
                     record.Date = DateTime.Parse(dateIp.Substring(0, ip).Trim());
-                    record.Address = IPAddress.Parse(dateIp.Substring(ip + 3).Trim());
                 }
 
                 yield return record;
             }
         }
 
-        private string GetUri(int page)
+        private Uri GetUri(int page)
         {
             var builder = new UriBuilder(article.Url);
             var query = HttpUtility.ParseQueryString(builder.Query);
@@ -147,7 +155,7 @@ namespace Wikiled.Delfi.Readers
             adjuster.AddParametes(query);
             query["no"] = (page * pageSize).ToString();
             builder.Query = query.ToString();
-            return builder.ToString();
+            return new Uri(builder.ToString());
         }
     }
 }

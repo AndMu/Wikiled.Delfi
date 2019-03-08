@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Wikiled.Delfi.Feeds;
+using Wikiled.News.Monitoring.Feeds;
 
 namespace Wikiled.Delfi.AcceptanceTests.Feeds
 {
