@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Autofac;
+using Microsoft.Extensions.Logging;
 using Wikiled.Common.Utilities.Config;
 using Wikiled.Delfi.Readers;
 using Wikiled.News.Monitoring.Feeds;
@@ -21,18 +22,19 @@ namespace Wikiled.Delfi.Containers
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<ApplicationConfiguration>().As<IApplicationConfiguration>();
-            builder.RegisterType<AlphaSessionReader>().As<ISessionReader>().SingleInstance().OnActivating(async item => await item.Instance.Init(CancellationToken.None).ConfigureAwait(false));
+            builder.RegisterType<AlphaSessionReader>()
+                .As<ISessionReader>()
+                .SingleInstance()
+                .OnActivating(async item => await item.Instance.Init(CancellationToken.None).ConfigureAwait(false));
             builder.RegisterType<CommentsReader>().As<ICommentsReader>();
             builder.RegisterType<ArticleTextReader>().As<IArticleTextReader>();
-            builder.RegisterType<AlphaDefinitionTransformer>().As<IDefinitionTransformer>();
+            //builder.RegisterType<AlphaDefinitionTransformer>().As<IDefinitionTransformer>();
             builder.Register(ctx => new ArticlesPersistency(ctx.Resolve<ILogger<ArticlesPersistency>>(), saveLocation)).As<IArticlesPersistency>();
 
-            foreach (var stock in stocks)
-            {
-                var feed = new FeedName();
-                feed.Url = $"https://www.delfi.lt/rss/feeds/daily.xml";
-                feed.Category = "Daily";
-                builder.RegisterInstance(feed);
-            }
+            var feed = new FeedName();
+            feed.Url = $"https://www.delfi.lt/rss/feeds/daily.xml";
+            feed.Category = "Daily";
+            builder.RegisterInstance(feed);
         }
     }
+}

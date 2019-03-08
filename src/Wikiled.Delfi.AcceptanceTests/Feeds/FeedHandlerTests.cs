@@ -1,7 +1,7 @@
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
-using Wikiled.Delfi.Feeds;
 using Wikiled.News.Monitoring.Feeds;
 
 namespace Wikiled.Delfi.AcceptanceTests.Feeds
@@ -26,10 +26,10 @@ namespace Wikiled.Delfi.AcceptanceTests.Feeds
 
         private FeedsHandler CreateInstance()
         {
-            FeedName feed = new FeedName();
+            var feed = new FeedName();
             feed.Url = "https://www.delfi.lt/rss/feeds/daily.xml";
             feed.Category = "Daily";
-            return new FeedsHandler(new[] { feed });
+            return new FeedsHandler(new NullLogger<FeedsHandler>(), new[] { feed });
         }
     }
 }
