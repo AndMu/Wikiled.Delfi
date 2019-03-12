@@ -4,6 +4,6 @@ namespace Wikiled.Delfi.Adjusters
 {
     public interface IAdjuster
     {
-        void AddParametes(NameValueCollection parameters);
+        void AddParametres(NameValueCollection parameters);
     }
 }

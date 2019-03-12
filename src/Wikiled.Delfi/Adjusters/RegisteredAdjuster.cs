@@ -5,7 +5,7 @@ namespace Wikiled.Delfi.Adjusters
 {
     public class RegisteredAdjuster : IAdjuster
     {
-        public void AddParametes(NameValueCollection parameters)
+        public void AddParametres(NameValueCollection parameters)
         {
             if (parameters == null)
             {

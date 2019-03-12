@@ -24,7 +24,7 @@ namespace Wikiled.Delfi.Readers
             logger = loggerFactory?.CreateLogger<ArticleTextReader>() ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<ArticleText> ReadArticle(ArticleDefinition definition, CancellationToken token)
+        public async Task<ArticleContent> ReadArticle(ArticleDefinition definition, CancellationToken token)
         {
             logger.LogDebug("Reading article text: {0}", definition.Id);
             var page = (await reader.Read(definition.Url, token).ConfigureAwait(false)).GetDocument();
@@ -43,7 +43,7 @@ namespace Wikiled.Delfi.Readers
                 }
             }
 
-            return new ArticleText
+            return new ArticleContent
             {
                 Title = description.InnerText?.Trim(),
                 Text = builder.ToString()

@@ -1,25 +1,38 @@
+using Autofac;
+using NUnit.Framework;
 using System;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.Abstractions;
-using NUnit.Framework;
-using Wikiled.Delfi.Adjusters;
-using Wikiled.Delfi.Data;
-using Wikiled.Delfi.Readers;
+using Wikiled.Delfi.AcceptanceTests.Helper;
+using Wikiled.News.Monitoring.Data;
+using Wikiled.News.Monitoring.Readers;
 
 namespace Wikiled.Delfi.AcceptanceTests.Readers
 {
     [TestFixture]
     public class CommentsReaderReaderTests
     {
+        private NetworkHelper helper;
+
+        [SetUp]
+        public void SetUp()
+        {
+            helper = new NetworkHelper();
+        }
+
+        [TearDown]
+        public void Teardown()
+        {
+            helper.Dispose();
+        }
+
         [TestCase]
         public async Task ReadComments()
         {
-            ArticleDefinition article = new ArticleDefinition();
-            article.Url = new Uri("https://www.delfi.lt/veidai/zmones/petro-grazulio-dukreles-mama-paviesino-ju-susirasinejima-galite-suprasti-kaip-jauciausi.d?id=78390475");
-            var reader = new CommentsReader(new NullLoggerFactory(), article, new AnonymousAdjuster(), new HtmlReader());
-            await reader.Init();
-            var comments = await reader.ReadAllComments().ToArray();
+            var article = new ArticleDefinition();
+            article.Url = new Uri("https://www.delfi.lt/auto/patarimai/siulo-keliuose-statyti-naujo-tipo-matuoklius-gales-daugiau-nei-isivaizduojate.d?id=80585701");
+            var instance = helper.Container.Resolve<ICommentsReader>(new TypedParameter(typeof(ArticleDefinition), article));
+            var comments = await instance.ReadAllComments().ToArray();
             Assert.Greater(comments.Length, 100);
         }
     }

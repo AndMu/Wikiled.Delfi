@@ -20,6 +20,12 @@
       <HintPath>C:\Users\Andrius.WIKILED\.nuget\packages\wikiled.common.utilities\1.0.5\lib\netstandard2.0\Wikiled.Common.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\data.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   
   <Target Name="ForceGenerationOfBindingRedirects" AfterTargets="ResolveAssemblyReferences" BeforeTargets="GenerateBindingRedirects" Condition="'$(AutoGenerateBindingRedirects)' == 'true'">
     <PropertyGroup>
