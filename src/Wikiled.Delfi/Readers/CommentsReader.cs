@@ -11,7 +11,9 @@ namespace Wikiled.Delfi.Readers
     {
         private readonly ISpecificCommentsReader[] readers;
 
-        public CommentsReader(ArticleDefinition article, IAdjuster[] adjusters, Func<ArticleDefinition, IAdjuster, ISpecificCommentsReader> readerFactory)
+        public CommentsReader(ArticleDefinition article,
+                              IAdjuster[] adjusters,
+                              Func<ArticleDefinition, IAdjuster, ISpecificCommentsReader> readerFactory)
         {
             if (adjusters == null)
             {

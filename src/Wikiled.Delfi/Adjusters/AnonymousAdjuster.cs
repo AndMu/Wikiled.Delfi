@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using Wikiled.News.Monitoring.Data;
 
 namespace Wikiled.Delfi.Adjusters
 {
@@ -13,6 +14,12 @@ namespace Wikiled.Delfi.Adjusters
             }
 
             parameters["reg"] = "0";
+        }
+
+        public CommentData Transform(CommentData data)
+        {
+            data.IsSpecialAuthor = false;
+            return data;
         }
     }
 }

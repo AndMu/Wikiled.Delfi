@@ -15,9 +15,25 @@ namespace Wikiled.Delfi.Containers
     {
         private readonly string saveLocation;
 
-        public DelfiModule(string saveLocation)
+        private readonly FeedName[] feeds;
+
+        private DelfiModule(string saveLocation, params FeedName[] feeds)
         {
             this.saveLocation = saveLocation ?? throw new ArgumentNullException(nameof(saveLocation));
+            this.feeds = feeds ?? throw new ArgumentNullException(nameof(feeds));
+        }
+
+        public static DelfiModule CreateWithFeeds(string saveLocation, FeedName[] feed)
+        {
+            return new DelfiModule(saveLocation, feed);
+        }
+
+        public static DelfiModule CreateDaily(string saveLocation)
+        {
+            var feed = new FeedName();
+            feed.Url = "https://www.delfi.lt/rss/feeds/daily.xml";
+            feed.Category = "Daily";
+            return new DelfiModule(saveLocation, feed);
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -29,11 +45,13 @@ namespace Wikiled.Delfi.Containers
             builder.RegisterType<CommentsReader>().As<ICommentsReader>();
             builder.RegisterType<ArticleTextReader>().As<IArticleTextReader>();
             builder.RegisterType<NullAuthentication>().As<IAuthentication>();
-            builder.Register(ctx => new ArticlesPersistency(ctx.Resolve<ILogger<ArticlesPersistency>>(), saveLocation)).As<IArticlesPersistency>();
-            var feed = new FeedName();
-            feed.Url = "https://www.delfi.lt/rss/feeds/daily.xml";
-            feed.Category = "Daily";
-            builder.RegisterInstance(feed);
+            builder.RegisterType<DelfiDefinitionTransformer>().As<IDefinitionTransformer>();
+            builder.Register(ctx => new ArticlesPersistency(ctx.Resolve<ILogger<ArticlesPersistency>>(), saveLocation))
+                .As<IArticlesPersistency>();
+            foreach (var feed in feeds)
+            {
+                builder.RegisterInstance(feed);
+            }
         }
     }
 }

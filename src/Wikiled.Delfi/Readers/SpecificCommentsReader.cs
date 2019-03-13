@@ -28,7 +28,10 @@ namespace Wikiled.Delfi.Readers
 
         private readonly int pageSize = 20;
 
-        public SpecificCommentsReader(ILogger<SpecificCommentsReader> logger, ArticleDefinition article, IAdjuster adjuster, ITrackedRetrieval reader)
+        public SpecificCommentsReader(ILogger<SpecificCommentsReader> logger,
+                                      ArticleDefinition article,
+                                      IAdjuster adjuster,
+                                      ITrackedRetrieval reader)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.article = article ?? throw new ArgumentNullException(nameof(article));
@@ -121,7 +124,7 @@ namespace Wikiled.Delfi.Readers
                 var dateIp = htmlNode.QuerySelector("div.comment-date").InnerText.Trim();
                 var ip = dateIp.IndexOf("IP:");
                 record.Date = DateTime.Parse(ip == -1 ? dateIp.Trim() : dateIp.Substring(0, ip).Trim());
-                yield return record;
+                yield return adjuster.Transform(record);
             }
         }
 

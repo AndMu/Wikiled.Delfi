@@ -13,7 +13,7 @@ namespace Wikiled.Delfi.AcceptanceTests.Helper
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MainModule>();
-            builder.RegisterModule(new DelfiModule("Data"));
+            builder.RegisterModule(DelfiModule.CreateDaily("Data"));
 
             builder.RegisterModule(
                 new RetrieverModule(

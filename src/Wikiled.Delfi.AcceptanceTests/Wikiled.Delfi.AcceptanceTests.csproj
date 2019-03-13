@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net472</TargetFrameworks>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
