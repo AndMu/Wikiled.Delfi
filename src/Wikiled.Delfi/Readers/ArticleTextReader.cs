@@ -14,14 +14,14 @@ namespace Wikiled.Delfi.Readers
 {
     public class ArticleTextReader : IArticleTextReader
     {
-        private readonly ILogger<ArticleTextReader> logger;
+        public readonly ILogger<ArticleTextReader> logger;
 
         private readonly ITrackedRetrieval reader;
 
-        public ArticleTextReader(ILoggerFactory loggerFactory, ITrackedRetrieval reader)
+        public ArticleTextReader(ILogger<ArticleTextReader> logger, ITrackedRetrieval reader)
         {
             this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
-            logger = loggerFactory?.CreateLogger<ArticleTextReader>() ?? throw new ArgumentNullException(nameof(logger));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<ArticleContent> ReadArticle(ArticleDefinition definition, CancellationToken token)
