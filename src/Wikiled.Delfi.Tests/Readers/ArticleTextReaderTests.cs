@@ -5,8 +5,6 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
-using NUnit.Framework.Internal;
 using Wikiled.Delfi.Readers;
 using Wikiled.News.Monitoring.Data;
 using Wikiled.News.Monitoring.Retriever;
@@ -48,12 +46,12 @@ namespace Wikiled.Delfi.Tests.Readers
         public void Construct()
         {
             Assert.Throws<ArgumentNullException>(() => new ArticleTextReader(null, retriever.Object));
-            Assert.Throws<ArgumentNullException>(() => new ArticleTextReader(new NullLoggerFactory(),  null));
+            Assert.Throws<ArgumentNullException>(() => new ArticleTextReader(new NullLogger<ArticleTextReader>(),  null));
         }
 
         private ArticleTextReader CreateInstance()
         {
-            return new ArticleTextReader(new NullLoggerFactory(), retriever.Object);
+            return new ArticleTextReader(new NullLogger<ArticleTextReader>(), retriever.Object);
         }
     }
 }

@@ -10,6 +10,7 @@ using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using Wikiled.Delfi.Adjusters;
 using Wikiled.News.Monitoring.Data;
+using Wikiled.News.Monitoring.Extensions;
 using Wikiled.News.Monitoring.Retriever;
 
 namespace Wikiled.Delfi.Readers
@@ -144,7 +145,8 @@ namespace Wikiled.Delfi.Readers
             firstPage = (await reader.Read(GetUri(0), CancellationToken.None).ConfigureAwait(false)).GetDocument();
             var doc = firstPage.DocumentNode;
             var commentsDefinition = doc.QuerySelector("div#comments-list");
-            Total = int.Parse(commentsDefinition.Attributes.First(a => a.Name == "data-count").Value);
+            var count = commentsDefinition.Attributes.First(a => a.Name == "data-count");
+            Total = count == null ? 0 : int.Parse(count.Value);
         }
     }
 }

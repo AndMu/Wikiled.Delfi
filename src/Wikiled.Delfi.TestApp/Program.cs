@@ -27,11 +27,12 @@ namespace Wikiled.Delfi.TestApp
             log.Info("Starting {0} version utility...", Assembly.GetExecutingAssembly().GetName().Version);
             var feeds = await new FeedsFactory().Read().ConfigureAwait(false);
             var builder = new ContainerBuilder();
-            builder.RegisterModule<MainModule>();
+            builder.RegisterModule<LoggingModule>();
+            builder.RegisterModule<MainNewsModule>();
             builder.RegisterModule<CommonModule>();
             builder.RegisterModule(DelfiModule.CreateWithFeeds("Data", feeds));
             builder.RegisterModule(
-                new RetrieverModule(new RetrieveConfiguration
+                new NewsRetrieverModule(new RetrieveConfiguration
                 {
                     LongRetryDelay = 60 * 20,
                     CallDelay = 0,
@@ -56,8 +57,8 @@ namespace Wikiled.Delfi.TestApp
             IArticlesMonitor monitor = container.Resolve<IArticlesMonitor>();
             "Data".EnsureDirectoryExistence();
             IArticlesPersistency persistency = container.Resolve<IArticlesPersistency>();
-            monitor.Start().Subscribe(item => persistency.Save(item));
-            monitor.Monitor().Subscribe(item => persistency.Save(item));
+            monitor.NewArticles().Subscribe(item => persistency.Save(item));
+            monitor.MonitorUpdates().Subscribe(item => persistency.Save(item));
             Console.ReadLine();
         }
     }

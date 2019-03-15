@@ -12,11 +12,11 @@ namespace Wikiled.Delfi.AcceptanceTests.Helper
         public NetworkHelper()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterModule<MainModule>();
+            builder.RegisterModule<MainNewsModule>();
             builder.RegisterModule(DelfiModule.CreateDaily("Data"));
 
             builder.RegisterModule(
-                new RetrieverModule(
+                new NewsRetrieverModule(
                     new RetrieveConfiguration
                     {
                         LongRetryDelay = 1000,

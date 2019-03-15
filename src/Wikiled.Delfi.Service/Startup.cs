@@ -2,12 +2,10 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Autofac;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Wikiled.Common.Extensions;
-using Wikiled.Common.Utilities.Modules;
 using Wikiled.Delfi.Containers;
 using Wikiled.Delfi.Feeds;
 using Wikiled.Delfi.Service.Config;
@@ -33,15 +31,6 @@ namespace Wikiled.Delfi.Service
             logger = loggerFactory.CreateLogger<Startup>();
         }
 
-        public override void Configure(IApplicationBuilder app,
-                                       IHostingEnvironment env,
-                                       IApplicationLifetime applicationLifetime)
-        {
-            base.Configure(app, env, applicationLifetime);
-            applicationLifetime.ApplicationStopping.Register(OnShutdown, disposable);
-        }
-
-
         public override IServiceProvider ConfigureServices(IServiceCollection services)
         {
             config = services.RegisterConfiguration<MonitorConfig>(Configuration.GetSection("Monitor"));
@@ -49,9 +38,10 @@ namespace Wikiled.Delfi.Service
             return base.ConfigureServices(services);
         }
 
-        private void OnShutdown(object toDispose)
+        protected override void OnShutdown()
         {
-            ((IDisposable)toDispose).Dispose();
+            base.OnShutdown();
+            disposable.Dispose();
         }
 
         protected override void ConfigureSpecific(ContainerBuilder builder)
@@ -64,24 +54,24 @@ namespace Wikiled.Delfi.Service
                 {
                     logger.LogInformation("Starting monitoring");
                     var initial = item.Context.Resolve<IArticlesMonitor>()
-                        .Start()
+                        .NewArticles()
                         .Select(item.Instance.Save)
                         .Merge()
                         .Subscribe();
                     disposable.Add(initial);
 
                     var monitorArticles = item.Context.Resolve<IArticlesMonitor>()
-                        .Monitor()
+                        .MonitorUpdates()
                         .Select(item.Instance.Save)
                         .Merge()
                         .Subscribe();
                     disposable.Add(monitorArticles);
                 });
 
-            builder.RegisterModule<MainModule>();
+            builder.RegisterModule<MainNewsModule>();
             var feeds = new FeedsFactory().Read().Result;
             builder.RegisterModule(DelfiModule.CreateWithFeeds(config.Location, feeds));
-            builder.RegisterModule(new RetrieverModule(config.Service));
+            builder.RegisterModule(new NewsRetrieverModule(config.Service));
         }
 
         protected override string GetPersistencyLocation()
