@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using System;
 using System.Net;
+using Wikiled.Common.Utilities.Modules;
 using Wikiled.Delfi.Containers;
 using Wikiled.News.Monitoring.Containers;
 using Wikiled.News.Monitoring.Retriever;
@@ -13,6 +14,7 @@ namespace Wikiled.Delfi.AcceptanceTests.Helper
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MainNewsModule>();
+            builder.RegisterModule<LoggingModule>();
             builder.RegisterModule(DelfiModule.CreateDaily("Data"));
 
             builder.RegisterModule(
