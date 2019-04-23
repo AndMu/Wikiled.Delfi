@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.3
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wikiled.Delfi", "Wikiled.Delfi\Wikiled.Delfi.csproj", "{65FB988C-CAF6-46C0-9195-71E98BE71BAE}"
 EndProject
@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		Dockerfile = Dockerfile
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{66DED891-49C0-46F2-A360-5D733DA4D7AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B6039651-78C8-4464-B382-1EFD10B752D3} = {66DED891-49C0-46F2-A360-5D733DA4D7AE}
+		{31C55500-62E2-4017-8C11-9327E709F9D3} = {66DED891-49C0-46F2-A360-5D733DA4D7AE}
+		{91CCBFE1-7E1E-478C-B6A3-56FDC4FBDAFE} = {66DED891-49C0-46F2-A360-5D733DA4D7AE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9B84AC43-B8AB-4EE2-BDEE-D6BDF066A755}
