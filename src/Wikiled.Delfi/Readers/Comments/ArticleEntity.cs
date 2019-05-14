@@ -5,30 +5,28 @@ namespace Wikiled.Delfi.Readers.Comments
     public class ArticleEntity
     {
         [JsonProperty("article_id")]
-        public long ArticleId { get; set; }
+        public int ArticleId { get; set; }
 
         [JsonProperty("count_total")]
-        public long CountTotal { get; set; }
+        public int CountTotal { get; set; }
 
         [JsonProperty("count_total_main_posts")]
-        public long CountTotalMainPosts { get; set; }
+        public int CountTotalMainPosts { get; set; }
 
         [JsonProperty("count_registered")]
-        public long CountRegistered { get; set; }
+        public int CountRegistered { get; set; }
 
         [JsonProperty("count_registered_main_posts")]
-        public long CountRegisteredMainPosts { get; set; }
+        public int CountRegisteredMainPosts { get; set; }
 
         [JsonProperty("count_anonymous_main_posts")]
-        public long CountAnonymousMainPosts { get; set; }
+        public int CountAnonymousMainPosts { get; set; }
 
         [JsonProperty("count_anonymous")]
-        public long CountAnonymous { get; set; }
+        public int CountAnonymous { get; set; }
 
         [JsonProperty("comments")]
         public Comment[] Comments { get; set; }
 
-        [JsonProperty("__typename")]
-        public string Typename { get; set; }
     }
 }

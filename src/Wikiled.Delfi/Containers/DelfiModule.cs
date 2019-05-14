@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading;
-using Autofac;
+﻿using Autofac;
 using Microsoft.Extensions.Logging;
+using System;
 using Wikiled.Common.Utilities.Config;
-using Wikiled.Delfi.Adjusters;
 using Wikiled.Delfi.Readers;
 using Wikiled.News.Monitoring.Feeds;
 using Wikiled.News.Monitoring.Persistency;
@@ -39,10 +37,8 @@ namespace Wikiled.Delfi.Containers
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<ApplicationConfiguration>().As<IApplicationConfiguration>();
-            builder.RegisterType<AnonymousAdjuster>().As<IAdjuster>();
-            builder.RegisterType<RegisteredAdjuster>().As<IAdjuster>();
             builder.RegisterType<SpecificCommentsReader>().As<ISpecificCommentsReader>();
-            builder.RegisterType<CommentsReader>().As<ICommentsReader>();
+            builder.RegisterType<SpecificCommentsReader>().As<ICommentsReader>();
             builder.RegisterType<ArticleTextReader>().As<IArticleTextReader>();
             builder.RegisterType<NullAuthentication>().As<IAuthentication>();
             builder.RegisterType<DelfiDefinitionTransformer>().As<IDefinitionTransformer>();

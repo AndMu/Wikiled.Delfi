@@ -30,6 +30,7 @@ namespace Wikiled.Delfi.AcceptanceTests.Readers
         public async Task ReadComments()
         {
             var article = new ArticleDefinition();
+            article.Id = "80585701";
             article.Url = new Uri("https://www.delfi.lt/auto/patarimai/siulo-keliuose-statyti-naujo-tipo-matuoklius-gales-daugiau-nei-isivaizduojate.d?id=80585701");
             var instance = helper.Container.Resolve<ICommentsReader>(new TypedParameter(typeof(ArticleDefinition), article));
             var comments = await instance.ReadAllComments().ToArray();

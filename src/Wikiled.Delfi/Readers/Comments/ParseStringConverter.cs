@@ -11,11 +11,11 @@ namespace Wikiled.Delfi.Readers.Comments
         {
             if (reader.TokenType == JsonToken.Null) return null;
             var value = serializer.Deserialize<string>(reader);
-            long l;
-            if (Int64.TryParse(value, out l))
+            if (long.TryParse(value, out var l))
             {
                 return l;
             }
+
             throw new Exception("Cannot unmarshal type long");
         }
 

@@ -8,15 +8,12 @@ namespace Wikiled.Delfi.Readers.Comments
         public long CommentId { get; set; }
 
         [JsonProperty("name")]
-        public Name Name { get; set; }
+        public string Name { get; set; }
 
         [JsonProperty("reaction")]
-        public ReactionEnum Reaction { get; set; }
+        public string Reaction { get; set; }
 
         [JsonProperty("count")]
         public long Count { get; set; }
-
-        [JsonProperty("__typename")]
-        public ReactionTypename Typename { get; set; }
     }
 }

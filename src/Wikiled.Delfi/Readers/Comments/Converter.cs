@@ -12,15 +12,6 @@ namespace Wikiled.Delfi.Readers.Comments
             DateParseHandling = DateParseHandling.None,
             Converters =
             {
-                CommentTypenameConverter.Singleton,
-                AuthorTypenameConverter.Singleton,
-                CountryCodeTypenameConverter.Singleton,
-                CodeConverter.Singleton,
-                ReactionTypenameConverter.Singleton,
-                NameConverter.Singleton,
-                ReactionEnumConverter.Singleton,
-                StatusConverter.Singleton,
-                VoteTypenameConverter.Singleton,
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
             },
         };

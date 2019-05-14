@@ -12,8 +12,5 @@ namespace Wikiled.Delfi.Readers.Comments
 
         [JsonProperty("sum")]
         public long Sum { get; set; }
-
-        [JsonProperty("__typename")]
-        public VoteTypename Typename { get; set; }
     }
 }

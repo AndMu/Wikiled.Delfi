@@ -27,8 +27,5 @@ namespace Wikiled.Delfi.Readers.Comments
 
         [JsonProperty("registered_comments_only")]
         public bool RegisteredCommentsOnly { get; set; }
-
-        [JsonProperty("__typename")]
-        public string Typename { get; set; }
     }
 }

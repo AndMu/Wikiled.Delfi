@@ -8,7 +8,7 @@ namespace Wikiled.Delfi.Readers.Comments
         public long ArticleId { get; set; }
 
         [JsonProperty("channelId")]
-        public long ChannelId { get; set; }
+        public int ChannelId { get; set; }
 
         [JsonProperty("modeType")]
         public string ModeType { get; set; }
@@ -17,7 +17,10 @@ namespace Wikiled.Delfi.Readers.Comments
         public string OrderBy { get; set; }
 
         [JsonProperty("limitReplies")]
-        public long LimitReplies { get; set; }
+        public int LimitReplies { get; set; }
+
+        [JsonProperty("limit")]
+        public int Limit { get; set; }
 
         [JsonProperty("orderByReplies")]
         public string OrderByReplies { get; set; }

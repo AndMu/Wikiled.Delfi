@@ -52,10 +52,7 @@ namespace Wikiled.Delfi.Readers.Comments
         public long CountRegisteredReplies { get; set; }
 
         [JsonProperty("status")]
-        public Status Status { get; set; }
-
-        [JsonProperty("__typename")]
-        public CommentTypename Typename { get; set; }
+        public string Status { get; set; }
 
         [JsonProperty("replies")]
         public Comment[] Replies { get; set; }

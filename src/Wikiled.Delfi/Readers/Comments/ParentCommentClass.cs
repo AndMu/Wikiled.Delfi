@@ -9,8 +9,5 @@ namespace Wikiled.Delfi.Readers.Comments
 
         [JsonProperty("subject")]
         public string Subject { get; set; }
-
-        [JsonProperty("__typename")]
-        public CommentTypename Typename { get; set; }
     }
 }
