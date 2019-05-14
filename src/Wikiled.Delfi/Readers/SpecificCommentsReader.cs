@@ -8,7 +8,9 @@ using System.Web;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Wikiled.Delfi.Adjusters;
+using Wikiled.Delfi.Readers.Comments;
 using Wikiled.News.Monitoring.Data;
 using Wikiled.News.Monitoring.Extensions;
 using Wikiled.News.Monitoring.Retriever;
@@ -47,44 +49,19 @@ namespace Wikiled.Delfi.Readers
             return Observable.Create<CommentData>(
                 async observer =>
                 {
-                    await Init().ConfigureAwait(false);
-                    var totalPages = Total / pageSize;
-                    if (Total % pageSize > 0)
+                    var result = await Read().ConfigureAwait(false);
+                    foreach (var comment in result.Data.GetCommentsByConfig.ArticleEntity.Comments)
                     {
-                        totalPages++;
+                        var commentData = new CommentData();
+                        commentData.AdditionalData = comment;
+                        commentData.Id = comment.Id.ToString();
+                        commentData.Author = comment.Author.Id.ToString();
+                        observer.OnNext(commentData);
                     }
 
-                    try
-                    {
-                        var tasks = new List<Task<HtmlDocument>>();
-                        tasks.Add(Task.FromResult(firstPage));
-                        for (var i = 1; i < totalPages; i++)
-                        {
-                            tasks.Add(GetDocumentById(i));
-                        }
-
-                        foreach (var task in tasks)
-                        {
-                            var result = await task.ConfigureAwait(false);
-                            foreach (var commentData in ParsePage(result))
-                            {
-                                observer.OnNext(commentData);
-                            }
-                        }
-
-                        observer.OnCompleted();
-                    }
-                    catch (Exception ex)
-                    {
-                        observer.OnError(ex);
-                    }
                 });
         }
 
-        private async Task<HtmlDocument> GetDocumentById(int id)
-        {
-            return (await reader.Read(GetUri(id), CancellationToken.None).ConfigureAwait(false)).GetDocument();
-        }
 
         private IEnumerable<CommentData> ParsePage(HtmlDocument html)
         {
@@ -129,24 +106,16 @@ namespace Wikiled.Delfi.Readers
             }
         }
 
-        private Uri GetUri(int page)
+        private async Task<CommentsResult> Read()
         {
-            var builder = new UriBuilder(article.Url);
-            var query = HttpUtility.ParseQueryString(builder.Query);
-            query["com"] = "1";
-            adjuster.AddParametres(query);
-            query["no"] = (page * pageSize).ToString();
-            builder.Query = query.ToString();
-            return new Uri(builder.ToString());
-        }
-
-        private async Task Init()
-        {
-            firstPage = (await reader.Read(GetUri(0), CancellationToken.None).ConfigureAwait(false)).GetDocument();
-            var doc = firstPage.DocumentNode;
-            var commentsDefinition = doc.QuerySelector("div#comments-list");
-            var count = commentsDefinition.Attributes.First(a => a.Name == "data-count");
-            Total = count == null ? 0 : int.Parse(count.Value);
+            var request = JsonConvert.SerializeObject(RequestComments.Create(long.Parse(article.Id)));
+            var json = await reader.Post(new Uri("https://api.delfi.lt/comment/v1/graphql"), request, CancellationToken.None).ConfigureAwait(false);
+            var data = JsonConvert.DeserializeObject<CommentsResult>(json, Converter.Settings);
+            return data;
+            //var doc = firstPage.DocumentNode;
+            //var commentsDefinition = doc.QuerySelector("div.comments-listing");
+            //var count = commentsDefinition.Attributes.First(a => a.Name == "data-count");
+            //Total = count == null ? 0 : int.Parse(count.Value);
         }
     }
 }

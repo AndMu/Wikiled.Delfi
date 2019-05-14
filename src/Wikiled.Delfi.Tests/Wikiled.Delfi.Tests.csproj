@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">  
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -9,7 +9,8 @@
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.1.5" />
     <PackageReference Include="Moq" Version="4.10.1" />
     <PackageReference Include="NUnit" Version="3.11.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />    
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+    <packagereference Include="Microsoft.NET.Test.Sdk" Version="16.1.0"></packagereference>
   </ItemGroup>
 
   <ItemGroup>
@@ -17,17 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Wikiled.Common.Utilities">
-      <HintPath>C:\Users\Andrius.WIKILED\.nuget\packages\wikiled.common.utilities\1.0.5\lib\netstandard2.0\Wikiled.Common.Utilities.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Data\data.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  
+
   <Target Name="ForceGenerationOfBindingRedirects" AfterTargets="ResolveAssemblyReferences" BeforeTargets="GenerateBindingRedirects" Condition="'$(AutoGenerateBindingRedirects)' == 'true'">
     <PropertyGroup>
       <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
