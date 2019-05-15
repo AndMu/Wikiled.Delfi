@@ -22,6 +22,9 @@ namespace Wikiled.Delfi.Readers.Comments
         [JsonProperty("limit")]
         public int Limit { get; set; }
 
+        [JsonProperty("offset")]
+        public int Offset { get; set; }
+
         [JsonProperty("orderByReplies")]
         public string OrderByReplies { get; set; }
     }

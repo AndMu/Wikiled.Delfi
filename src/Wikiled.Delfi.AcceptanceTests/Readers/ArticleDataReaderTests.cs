@@ -37,6 +37,7 @@ namespace Wikiled.Delfi.AcceptanceTests.Readers
         {
             var tokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(2));
             var definition = new ArticleDefinition();
+            definition.Id = "80585701";
             definition.Url = new Uri("https://www.delfi.lt/auto/patarimai/siulo-keliuose-statyti-naujo-tipo-matuoklius-gales-daugiau-nei-isivaizduojate.d?id=80585701");
             var result = await instance.Read(definition, tokenSource.Token);
             Assert.IsNotNull(result);

@@ -37,8 +37,8 @@ namespace Wikiled.Delfi.Containers
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<ApplicationConfiguration>().As<IApplicationConfiguration>();
-            builder.RegisterType<SpecificCommentsReader>().As<ISpecificCommentsReader>();
-            builder.RegisterType<SpecificCommentsReader>().As<ICommentsReader>();
+            builder.RegisterType<CommentsReader>().As<ICommentsReader>();
+            builder.RegisterType<CommentsReader>().As<News.Monitoring.Readers.ICommentsReader>();
             builder.RegisterType<ArticleTextReader>().As<IArticleTextReader>();
             builder.RegisterType<NullAuthentication>().As<IAuthentication>();
             builder.RegisterType<DelfiDefinitionTransformer>().As<IDefinitionTransformer>();
