@@ -39,7 +39,7 @@ namespace Wikiled.Delfi.AcceptanceTests.Readers
             var definition = new ArticleDefinition();
             definition.Id = "80585701";
             definition.Url = new Uri("https://www.delfi.lt/auto/patarimai/siulo-keliuose-statyti-naujo-tipo-matuoklius-gales-daugiau-nei-isivaizduojate.d?id=80585701");
-            var result = await instance.Read(definition, tokenSource.Token);
+            var result = await instance.Read(definition, tokenSource.Token).ConfigureAwait(false);
             Assert.IsNotNull(result);
             Assert.GreaterOrEqual(result.Content.Text.Length, 100);
             Assert.GreaterOrEqual(result.Content.Title.Length, 100);

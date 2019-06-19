@@ -34,7 +34,7 @@ namespace Wikiled.Delfi.TestApp
             builder.RegisterModule(
                 new NewsRetrieverModule(new RetrieveConfiguration
                 {
-                    LongRetryDelay = 60 * 20,
+                    LongDelay = 60 * 20,
                     CallDelay = 0,
                     LongRetryCodes = new[] { HttpStatusCode.Forbidden, },
                     RetryCodes = new[]

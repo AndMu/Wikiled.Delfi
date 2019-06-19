@@ -21,8 +21,9 @@ namespace Wikiled.Delfi.AcceptanceTests.Helper
                 new NewsRetrieverModule(
                     new RetrieveConfiguration
                     {
-                        LongRetryDelay = 1000,
+                        LongDelay = 1000,
                         CallDelay = 0,
+                        ShortDelay = 1000,
                         LongRetryCodes = new[] { HttpStatusCode.Forbidden },
                         RetryCodes = new[]
                         {
