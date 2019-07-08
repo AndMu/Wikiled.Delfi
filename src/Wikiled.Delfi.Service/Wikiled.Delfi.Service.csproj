@@ -17,7 +17,7 @@
     <PackageReference Include="System.Reactive" Version="4.1.5" />
     <PackageReference Include="Wikiled.News.Monitoring" Version="1.0.31" />
     <PackageReference Include="Wikiled.Sentiment.Tracking.Service" Version="1.0.12" />
-    <PackageReference Include="Wikiled.Server.Core" Version="1.2.18" />
+    <PackageReference Include="Wikiled.Server.Core" Version="1.2.20" />
   </ItemGroup>
 
   <ItemGroup>
