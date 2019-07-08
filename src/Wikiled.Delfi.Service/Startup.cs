@@ -14,6 +14,7 @@ using Wikiled.News.Monitoring.Containers;
 using Wikiled.News.Monitoring.Monitoring;
 using Wikiled.Sentiment.Tracking.Service;
 using Wikiled.Server.Core.Helpers;
+using Wikiled.Server.Core.Performance;
 
 namespace Wikiled.Delfi.Service
 {
@@ -35,6 +36,7 @@ namespace Wikiled.Delfi.Service
         {
             config = services.RegisterConfiguration<MonitorConfig>(Configuration.GetSection("Monitor"));
             config.Location.EnsureDirectoryExistence();
+            services.AddHostedService<ResourceMonitoringService>();
             return base.ConfigureServices(services);
         }
 
