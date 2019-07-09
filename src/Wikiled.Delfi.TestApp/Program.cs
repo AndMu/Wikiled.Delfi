@@ -36,6 +36,7 @@ namespace Wikiled.Delfi.TestApp
                 {
                     LongDelay = 60 * 20,
                     CallDelay = 0,
+                    ShortDelay = 1000,
                     LongRetryCodes = new[] { HttpStatusCode.Forbidden, },
                     RetryCodes = new[]
                     {
