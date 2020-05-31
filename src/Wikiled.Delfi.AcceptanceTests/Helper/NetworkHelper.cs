@@ -18,7 +18,7 @@ namespace Wikiled.Delfi.AcceptanceTests.Helper
             builder.RegisterModule(DelfiModule.CreateDaily("Data"));
 
             builder.RegisterModule(
-                new NewsRetrieverModule(
+                new NetworkModule(
                     new RetrieveConfiguration
                     {
                         LongDelay = 1000,
@@ -28,11 +28,11 @@ namespace Wikiled.Delfi.AcceptanceTests.Helper
                         RetryCodes = new[]
                         {
                             HttpStatusCode.Forbidden,
-                            HttpStatusCode.RequestTimeout, // 408
+                            HttpStatusCode.RequestTimeout,      // 408
                             HttpStatusCode.InternalServerError, // 500
-                            HttpStatusCode.BadGateway, // 502
-                            HttpStatusCode.ServiceUnavailable, // 503
-                            HttpStatusCode.GatewayTimeout // 504
+                            HttpStatusCode.BadGateway,          // 502
+                            HttpStatusCode.ServiceUnavailable,  // 503
+                            HttpStatusCode.GatewayTimeout       // 504
                         },
                         MaxConcurrent = 1
                     }));

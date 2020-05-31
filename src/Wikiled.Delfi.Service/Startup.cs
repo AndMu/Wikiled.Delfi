@@ -51,7 +51,7 @@ namespace Wikiled.Delfi.Service
             builder.RegisterModule<MainNewsModule>();
             var feeds = new FeedsFactory().Read().Result;
             builder.RegisterModule(DelfiModule.CreateWithFeeds(config.Location, feeds));
-            builder.RegisterModule(new NewsRetrieverModule(config.Service));
+            builder.RegisterModule(new NetworkModule(config.Service));
         }
 
         protected override string GetPersistencyLocation()

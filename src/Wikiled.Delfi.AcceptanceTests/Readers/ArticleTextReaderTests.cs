@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Wikiled.Delfi.AcceptanceTests.Helper;
 using Wikiled.News.Monitoring.Data;
 using Wikiled.News.Monitoring.Readers;
+using Wikiled.News.Monitoring.Retriever;
 
 namespace Wikiled.Delfi.AcceptanceTests.Readers
 {
@@ -20,7 +21,7 @@ namespace Wikiled.Delfi.AcceptanceTests.Readers
         public void SetUp()
         {
             helper = new NetworkHelper();
-            instance = helper.Container.GetRequiredService<IArticleTextReader>();
+            instance = helper.Container.GetRequiredService<Func<ITrackedRetrieval, IArticleTextReader>>()(helper.Container.GetRequiredService<ITrackedRetrieval>());
         }
 
         [TearDown]

@@ -31,23 +31,23 @@ namespace Wikiled.Delfi.TestApp
             builder.RegisterModule<CommonModule>();
             builder.RegisterModule(DelfiModule.CreateWithFeeds("Data", feeds));
             builder.RegisterModule(
-                new NewsRetrieverModule(new RetrieveConfiguration
-                {
-                    LongDelay = 60 * 20,
-                    CallDelay = 0,
-                    ShortDelay = 1000,
-                    LongRetryCodes = new[] { HttpStatusCode.Forbidden, },
-                    RetryCodes = new[]
-                    {
-                        HttpStatusCode.Forbidden,
-                        HttpStatusCode.RequestTimeout, // 408
-                        HttpStatusCode.InternalServerError, // 500
-                        HttpStatusCode.BadGateway, // 502
-                        HttpStatusCode.ServiceUnavailable, // 503
-                        HttpStatusCode.GatewayTimeout // 504
-                    },
-                    MaxConcurrent = 1
-                }));
+                new NetworkModule(new RetrieveConfiguration
+                                  {
+                                      LongDelay = 60 * 20,
+                                      CallDelay = 0,
+                                      ShortDelay = 1000,
+                                      LongRetryCodes = new[] { HttpStatusCode.Forbidden, },
+                                      RetryCodes = new[]
+                                                   {
+                                                       HttpStatusCode.Forbidden,
+                                                       HttpStatusCode.RequestTimeout, // 408
+                                                       HttpStatusCode.InternalServerError, // 500
+                                                       HttpStatusCode.BadGateway, // 502
+                                                       HttpStatusCode.ServiceUnavailable, // 503
+                                                       HttpStatusCode.GatewayTimeout // 504
+                                                   },
+                                      MaxConcurrent = 1
+                                  }));
 
 
             var container = builder.BuildServiceProvider();
@@ -57,8 +57,8 @@ namespace Wikiled.Delfi.TestApp
             IArticlesMonitor monitor = container.GetRequiredService<IArticlesMonitor>();
             "Data".EnsureDirectoryExistence();
             IArticlesPersistency persistency = container.GetRequiredService<IArticlesPersistency>();
-            monitor.NewArticles().Subscribe(item => persistency.Save(item));
-            monitor.MonitorUpdates().Subscribe(item => persistency.Save(item));
+            monitor.NewArticlesStream().Subscribe(item => persistency.Save(item));
+            monitor.MonitorUpdatesStream().Subscribe(item => persistency.Save(item));
             Console.ReadLine();
         }
     }

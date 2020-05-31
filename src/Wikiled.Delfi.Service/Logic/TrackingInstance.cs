@@ -32,13 +32,13 @@ namespace Wikiled.Delfi.Service.Logic
         {
             logger.LogInformation("Starting monitoring");
             initial = articlesMonitor
-                          .NewArticles()
+                          .NewArticlesStream()
                           .Select(Save)
                           .Merge()
                           .Subscribe();
 
             monitorArticles = articlesMonitor
-                                  .MonitorUpdates()
+                              .NewArticlesStream()
                                   .Select(Save)
                                   .Merge()
                                   .Subscribe();
