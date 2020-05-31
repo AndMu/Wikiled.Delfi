@@ -49,10 +49,7 @@ namespace Wikiled.Delfi.Containers
             services.AddTransient<IDefinitionTransformer, DelfiDefinitionTransformer>();
 
             services.AddTransient<IArticlesPersistency>(ctx => new ArticlesPersistency(ctx.GetRequiredService<ILogger<ArticlesPersistency>>(), saveLocation));
-            foreach (var feed in feeds)
-            {
-                services.AddSingleton(feed);
-            }
+            services.AddSingleton(feeds);
 
             return services;
         }
