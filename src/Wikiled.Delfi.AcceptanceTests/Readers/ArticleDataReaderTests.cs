@@ -1,12 +1,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Autofac;
-using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Wikiled.Delfi.AcceptanceTests.Helper;
-using Wikiled.Delfi.Containers;
-using Wikiled.Delfi.Readers;
 using Wikiled.News.Monitoring.Data;
 using Wikiled.News.Monitoring.Readers;
 
@@ -23,7 +20,7 @@ namespace Wikiled.Delfi.AcceptanceTests.Readers
         public void SetUp()
         {
             helper = new NetworkHelper();
-            instance = helper.Container.Resolve<IArticleDataReader>();
+            instance = helper.Container.GetRequiredService<IArticleDataReader>();
         }
 
         [TearDown]
@@ -42,7 +39,7 @@ namespace Wikiled.Delfi.AcceptanceTests.Readers
             var result = await instance.Read(definition, tokenSource.Token).ConfigureAwait(false);
             Assert.IsNotNull(result);
             Assert.GreaterOrEqual(result.Content.Text.Length, 100);
-            Assert.GreaterOrEqual(result.Content.Title.Length, 100);
+            Assert.GreaterOrEqual(result.Content.Title.Length, 50);
             Assert.GreaterOrEqual(result.Comments.Length, 100);
         }
     }

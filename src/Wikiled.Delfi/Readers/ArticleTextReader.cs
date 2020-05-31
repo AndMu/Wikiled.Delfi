@@ -15,7 +15,7 @@ namespace Wikiled.Delfi.Readers
 {
     public class ArticleTextReader : IArticleTextReader
     {
-        public readonly ILogger<ArticleTextReader> logger;
+        private readonly ILogger<ArticleTextReader> logger;
 
         private readonly ITrackedRetrieval reader;
 
@@ -31,10 +31,14 @@ namespace Wikiled.Delfi.Readers
             var page = (await reader.Read(definition.Url, token).ConfigureAwait(false)).GetDocument();
             var doc = page.DocumentNode;
             var article = doc.QuerySelector("div.article-body");
-            var description = article.QuerySelector("div[itemprop='description']");
-            var articleInner = doc.QuerySelector("div[itemprop='articleBody']");
+            var description = doc.QuerySelector("div.article-title h1");
+            var lead = article.QuerySelector("div.delfi-article-lead");
+            var row = article.QuerySelector("div.col-xs-8");
+
             var builder = new StringBuilder();
-            var pargraphs = articleInner.QuerySelectorAll("p");
+            var pargraphs = lead.QuerySelectorAll("p")
+                                .Concat(row.ChildNodes.First(item => string.Compare(item.Name, "DIV", StringComparison.OrdinalIgnoreCase) == 0)
+                                           .QuerySelectorAll("p"));
             foreach (var pargraph in pargraphs)
             {
                 foreach (var textNode in pargraph.ChildNodes.Where(item => item is HtmlTextNode || string.Compare(item.Name, "a", StringComparison.OrdinalIgnoreCase) == 0))

@@ -1,12 +1,11 @@
-﻿using Autofac;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Extensions.Logging;
 using System;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using CodeHollow.FeedReader;
+using Microsoft.Extensions.DependencyInjection;
 using Wikiled.Common.Extensions;
 using Wikiled.Common.Utilities.Modules;
 using Wikiled.Delfi.Containers;
@@ -26,7 +25,7 @@ namespace Wikiled.Delfi.TestApp
         {
             log.Info("Starting {0} version utility...", Assembly.GetExecutingAssembly().GetName().Version);
             var feeds = await new FeedsFactory().Read().ConfigureAwait(false);
-            var builder = new ContainerBuilder();
+            var builder = new ServiceCollection();
             builder.RegisterModule<LoggingModule>();
             builder.RegisterModule<MainNewsModule>();
             builder.RegisterModule<CommonModule>();
@@ -51,13 +50,13 @@ namespace Wikiled.Delfi.TestApp
                 }));
 
 
-            IContainer container = builder.Build();
-            ILoggerFactory loggerFactory = container.Resolve<ILoggerFactory>();
+            var container = builder.BuildServiceProvider();
+            ILoggerFactory loggerFactory = container.GetRequiredService<ILoggerFactory>();
             loggerFactory.AddNLog(new NLogProviderOptions { CaptureMessageTemplates = true, CaptureMessageProperties = true });
 
-            IArticlesMonitor monitor = container.Resolve<IArticlesMonitor>();
+            IArticlesMonitor monitor = container.GetRequiredService<IArticlesMonitor>();
             "Data".EnsureDirectoryExistence();
-            IArticlesPersistency persistency = container.Resolve<IArticlesPersistency>();
+            IArticlesPersistency persistency = container.GetRequiredService<IArticlesPersistency>();
             monitor.NewArticles().Subscribe(item => persistency.Save(item));
             monitor.MonitorUpdates().Subscribe(item => persistency.Save(item));
             Console.ReadLine();

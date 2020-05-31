@@ -7,21 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NLog" version="4.6.5" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.5.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
-    <PackageReference Include="Autofac" Version="4.9.2" />
-    <PackageReference Include="Wikiled.News.Monitoring" Version="1.0.31" />
+    <PackageReference Include="NLog" version="4.7.2" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.6.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.4" />
+    <PackageReference Include="Wikiled.News.Monitoring" Version="1.1.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Wikiled.Delfi\Wikiled.Delfi.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Wikiled.News.Monitoring">
-      <HintPath>C:\Users\Andrius\.nuget\packages\wikiled.news.monitoring\1.0.15\lib\netstandard2.0\Wikiled.News.Monitoring.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

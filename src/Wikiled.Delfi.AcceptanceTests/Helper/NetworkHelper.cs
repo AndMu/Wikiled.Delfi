@@ -1,6 +1,6 @@
-﻿using Autofac;
-using System;
+﻿using System;
 using System.Net;
+using Microsoft.Extensions.DependencyInjection;
 using Wikiled.Common.Utilities.Modules;
 using Wikiled.Delfi.Containers;
 using Wikiled.News.Monitoring.Containers;
@@ -12,7 +12,7 @@ namespace Wikiled.Delfi.AcceptanceTests.Helper
     {
         public NetworkHelper()
         {
-            var builder = new ContainerBuilder();
+            var builder = new ServiceCollection();
             builder.RegisterModule<MainNewsModule>();
             builder.RegisterModule<LoggingModule>();
             builder.RegisterModule(DelfiModule.CreateDaily("Data"));
@@ -37,11 +37,11 @@ namespace Wikiled.Delfi.AcceptanceTests.Helper
                         MaxConcurrent = 1
                     }));
 
-            Container = builder.Build();
-            Retrieval = Container.Resolve<ITrackedRetrieval>();
+            Container = builder.BuildServiceProvider();
+            Retrieval = Container.GetRequiredService<ITrackedRetrieval>();
         }
 
-        public IContainer Container { get; }
+        public ServiceProvider Container { get; }
 
         public ITrackedRetrieval Retrieval { get; }
 

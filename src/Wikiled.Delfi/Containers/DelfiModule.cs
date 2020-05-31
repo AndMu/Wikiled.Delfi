@@ -1,15 +1,18 @@
-﻿using Autofac;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Wikiled.Common.Utilities.Config;
+using Wikiled.Common.Utilities.Modules;
 using Wikiled.Delfi.Readers;
+using Wikiled.News.Monitoring.Data;
 using Wikiled.News.Monitoring.Feeds;
 using Wikiled.News.Monitoring.Persistency;
 using Wikiled.News.Monitoring.Readers;
+using Wikiled.News.Monitoring.Retriever;
 
 namespace Wikiled.Delfi.Containers
 {
-    public class DelfiModule : Module
+    public class DelfiModule : IModule
     {
         private readonly string saveLocation;
 
@@ -34,20 +37,24 @@ namespace Wikiled.Delfi.Containers
             return new DelfiModule(saveLocation, feed);
         }
 
-        protected override void Load(ContainerBuilder builder)
+        public IServiceCollection ConfigureServices(IServiceCollection services)
         {
-            builder.RegisterType<ApplicationConfiguration>().As<IApplicationConfiguration>();
-            builder.RegisterType<CommentsReader>().As<ICommentsReader>();
-            builder.RegisterType<CommentsReader>().As<News.Monitoring.Readers.ICommentsReader>();
-            builder.RegisterType<ArticleTextReader>().As<IArticleTextReader>();
-            builder.RegisterType<NullAuthentication>().As<IAuthentication>();
-            builder.RegisterType<DelfiDefinitionTransformer>().As<IDefinitionTransformer>();
-            builder.Register(ctx => new ArticlesPersistency(ctx.Resolve<ILogger<ArticlesPersistency>>(), saveLocation))
-                .As<IArticlesPersistency>();
+            services.AddTransient<IApplicationConfiguration, ApplicationConfiguration>();
+            services.AddSingleton(
+                ctx => (Func<ITrackedRetrieval, ArticleDefinition, ICommentsReader>)((arg, def) => new CommentsReader(ctx.GetRequiredService<ILogger<CommentsReader>>(), def, arg)));
+            services.AddSingleton(
+                ctx => (Func<ITrackedRetrieval, IArticleTextReader>)(arg => new ArticleTextReader(ctx.GetRequiredService<ILogger<ArticleTextReader>>(), arg)));
+            services.AddSingleton(
+                ctx => (Func<ITrackedRetrieval, IAuthentication>)(arg => new NullAuthentication(arg)));
+            services.AddTransient<IDefinitionTransformer, DelfiDefinitionTransformer>();
+
+            services.AddTransient<IArticlesPersistency>(ctx => new ArticlesPersistency(ctx.GetRequiredService<ILogger<ArticlesPersistency>>(), saveLocation));
             foreach (var feed in feeds)
             {
-                builder.RegisterInstance(feed);
+                services.AddSingleton(feed);
             }
+
+            return services;
         }
     }
 }

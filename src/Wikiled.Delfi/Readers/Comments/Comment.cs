@@ -24,8 +24,7 @@ namespace Wikiled.Delfi.Readers.Comments
         public object ClientIp { get; set; }
 
         [JsonProperty("client_cookie")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long ClientCookie { get; set; }
+        public string ClientCookie { get; set; }
 
         [JsonProperty("vote")]
         public Vote Vote { get; set; }
